@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Comment;
 use App\Models\Video;
 use App\Models\Reaction;
+use App\Models\Permission;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -25,10 +26,16 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $user = DB::select('select id, username, email, first_name, last_name, age, city, country, group_id, avatar_url from users where id=' . $request['id'] . ' LIMIT 1');
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
+        $user = User::where('id', $request['id'])->get();
 
         return response()->json([
-            'message' => 'Retrieved User ID: ' . $request['id'],
+            'message' => 'Naudotojo duomenys sėkmingai gauti',
             'user' => $user[0]
         ], 201);
     }
@@ -49,6 +56,12 @@ class UserController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
         $user = User::find($request['user_id']);
 
         $user->first_name = $request['first_name'];
@@ -62,7 +75,6 @@ class UserController extends Controller
         if ($request->hasFile('avatar_url')) {
 
             $oldPath = public_path() . '/' . $user->avatar_url;
-            //Storage::disk('users')->delete(public_path().'/'.$user->avatar_url);
             File::delete($oldPath);
 
             $path = $request->file('avatar_url')->store('users', ['disk' => 'users']);
@@ -72,15 +84,13 @@ class UserController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'User edited',
-            'user' => $user,
-            'old_image' => $oldPath
+            'message' => 'Sėkmingai atnaujintas profilis',
+            'user' => $user
         ], 201);
     }
 
     public function deleteProfile()
     {
-
         $user = auth()->user();
 
         if (!$user) {
@@ -118,8 +128,7 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json([
-            'message' => 'User deleted',
-            'user' => $user
+            'message' => 'Naudotojas sėkmingai ištrintas'
         ], 201);
     }
 }

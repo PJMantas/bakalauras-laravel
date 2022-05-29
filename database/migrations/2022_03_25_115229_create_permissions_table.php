@@ -27,17 +27,16 @@ class CreatePermissionsTable extends Migration
             $table->boolean('comment_edit')->default('0');
             $table->boolean('comment_delete')->default('0');
 
-            //admin permisions
+            //administratoriaus teisės
             $table->boolean('is_admin')->default('0');
             $table->boolean('manage_users')->default('0');
-            $table->boolean('user_edit')->default('0');
             $table->boolean('manage_permissions')->default('0');
             $table->boolean('manage_genres')->default('0');
 
             $table->timestamps();
         });
 
-        //Default registered user
+        // Numatytosios naudotojo teisės
         DB::table('permissions')->insert(
             array(
                 'group_name' => 'Registered User',
@@ -50,7 +49,7 @@ class CreatePermissionsTable extends Migration
                 'comment_edit' => '1',
                 'comment_delete' => '1',
 
-                // admin-only permissions
+                // administratoriaus teisės
                 'is_admin' => '0',
                 'manage_users' => '0',
                 'manage_permissions' => '0',
@@ -59,7 +58,7 @@ class CreatePermissionsTable extends Migration
           
         );
 
-        //admin user
+        // Numatytosios naudotojo teisės
         DB::table('permissions')->insert(
             array(
                 'group_name' => 'Admin',
@@ -72,7 +71,7 @@ class CreatePermissionsTable extends Migration
                 'comment_edit' => '1',
                 'comment_delete' => '1',
 
-                // admin-only permissions
+                // administratoriaus teisės
                 'is_admin' => '1',
                 'manage_users' => '1',
                 'manage_permissions' => '1',
@@ -81,7 +80,7 @@ class CreatePermissionsTable extends Migration
           
         );
 
-        //unregistered user
+        // Tušia teisės grupė
         DB::table('permissions')->insert(
             array(
                 'group_name' => 'Unregistered User',
@@ -94,7 +93,7 @@ class CreatePermissionsTable extends Migration
                 'comment_edit' => '0',
                 'comment_delete' => '0',
 
-                // admin-only permissions
+                // administratoriaus teisės
                 'is_admin' => '0',
                 'manage_users' => '0',
                 'manage_permissions' => '0',

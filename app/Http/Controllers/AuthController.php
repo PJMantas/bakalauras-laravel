@@ -28,7 +28,7 @@ class AuthController extends Controller
 
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string|between:2,100',
+            'username' => 'required|string|between:2,100|unique:users',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
             'first_name' => 'nullable|string',
@@ -63,7 +63,7 @@ class AuthController extends Controller
 
     public function logout() {
         auth()->logout();
-        return response()->json(['message' => 'Naudotojas sėkmingai atsijungtas'], 200);
+        return response()->json(['message' => 'Naudotojas sėkmingai atjungtas'], 200);
     }
 
     public function refresh() {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Video;
 use App\Models\Genre;
+use App\Models\Permission;
 use App\Models\GenreRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -14,8 +15,8 @@ class GenreRequestController extends Controller
     public function addGenreRequest(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|between:2,100',
-            'description' => 'required',
+            'title' => 'required|string|between:2,20',
+            'description' => 'required|string|between:2,100',
 
         ]);
 
@@ -24,6 +25,9 @@ class GenreRequestController extends Controller
         }
 
         $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'Neregistruotas naudotojas'], 401);
+        }
 
         $genreRequest = new GenreRequest();
 
@@ -36,7 +40,7 @@ class GenreRequestController extends Controller
         $genreRequest->save();
 
         return response()->json([
-            'message' => 'Genre request successfully created',
+            'message' => 'Žymos prašymas sėkmingai pateiktas',
             'genreRequest' => $genreRequest,
         ], 201);
     }
@@ -45,12 +49,16 @@ class GenreRequestController extends Controller
     {
         $user = auth()->user();
 
+        if (!$user){
+            return response()->json(['message' => 'Neregistruotas naudotojas'], 401);
+        }
+
         $genreRequests = DB::table('genre_requests')
             ->where('user_id', $user->id)
             ->get();
 
         return response()->json([
-            'message' => 'Genre requests successfully retrieved',
+            'message' => 'Žymų prašymų sąrašas sėkmingai gautas',
             'genreRequests' => $genreRequests,
         ], 200);
     }
@@ -65,28 +73,46 @@ class GenreRequestController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $user = auth()->user();
+
+        if (!$user){
+            return response()->json(['message' => 'Neregistruotas naudotojas'], 401);
+        }
+
         $genreRequest = GenreRequest::find($request['id']);
 
         if ($genreRequest == null) {
             return response()->json([
-                'message' => 'Genre request not found',
+                'message' => 'Žymos prašymas nerastas',
             ], 404);
         }
 
         $genreRequest->delete();
 
         return response()->json([
-            'message' => 'Genre request successfully deleted',
+            'message' => 'Žymos prašymas sėkmingai ištrintas',
         ], 200);
     }
 
     public function getGenreRequestsList(Request $request)
     {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
+        $permission = Permission::where('id', $user->group_id)->get();
+
+        if(!$permission[0]->is_admin){
+            return response()->json(['error' => 'Nėra teisių'], 401);
+        }
+
         $genreRequests = DB::table('genre_requests')
             ->get();
 
         return response()->json([
-            'message' => 'Genre requests successfully retrieved',
+            'message' => 'Žymos prašymų sąrašas sėkmingai gautas',
             'genreRequests' => $genreRequests,
         ], 200);
     }
@@ -101,11 +127,23 @@ class GenreRequestController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
+        $permission = Permission::where('id', $user->group_id)->get();
+
+        if(!$permission[0]->is_admin){
+            return response()->json(['error' => 'Nėra teisių'], 401);
+        }
+
         $genreRequest = GenreRequest::find($request['id']);
 
         if ($genreRequest == null) {
             return response()->json([
-                'message' => 'Genre request not found',
+                'message' => 'Žymos prašymas nerastas',
             ], 404);
         }
 
@@ -114,7 +152,7 @@ class GenreRequestController extends Controller
         $genreRequest->save();
 
         return response()->json([
-            'message' => 'Genre request successfully rejected',
+            'message' => 'Žymos prašymas sėkmingai atmestas',
             'genreRequest' => $genreRequest,
         ], 200);
     }
@@ -129,11 +167,23 @@ class GenreRequestController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
+        $permission = Permission::where('id', $user->group_id)->get();
+
+        if(!$permission[0]->is_admin){
+            return response()->json(['error' => 'Nėra teisių'], 401);
+        }
+
         $genreRequest = GenreRequest::find($request['id']);
 
         if ($genreRequest == null) {
             return response()->json([
-                'message' => 'Genre request not found',
+                'message' => 'Žymos prašymas nerastas',
             ], 404);
         }
 
@@ -142,7 +192,7 @@ class GenreRequestController extends Controller
         $genreRequest->save();
 
         return response()->json([
-            'message' => 'Genre request successfully approved',
+            'message' => 'Žymos prašymas sėkmingai patvirtintas',
             'genreRequest' => $genreRequest,
         ], 200);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use App\Models\Permission;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -12,7 +13,7 @@ class CommentController extends Controller
     public function createComment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'comment_text' => 'required|string|max:255',
+            'comment_text' => 'required|string|between:2,100',
             'video_id' => 'required|numeric',
             'comment_parent_id' => 'nullable|numeric',
         ]);
@@ -27,6 +28,12 @@ class CommentController extends Controller
             return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
         }
 
+        $permission = Permission::where('id', $user->group_id)->get();
+
+        if(!$permission[0]->comment_create){
+            return response()->json(['error' => 'Nėra teisių'], 401);
+        }
+
         $comment = new Comment();
         $comment->user_id = $user->id;
         $comment->video_id = $request['video_id'];
@@ -36,7 +43,7 @@ class CommentController extends Controller
         $comment->save();
 
         return response()->json([
-            'message' => 'Comment successfully created',
+            'message' => 'Komentaras sėkmingai pridėtas',
             'comment' => $comment,
         ], 201);
     }
@@ -44,7 +51,7 @@ class CommentController extends Controller
     public function createCommentReply(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'comment_text' => 'required|string|max:255',
+            'comment_text' => 'required|string|between:2,100',
             'video_id' => 'required|numeric',
             'comment_parent_id' => 'required|numeric',
         ]);
@@ -55,6 +62,16 @@ class CommentController extends Controller
 
         $user = auth()->user();
 
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
+        $permission = Permission::where('id', $user->group_id)->get();
+
+        if(!$permission[0]->comment_create){
+            return response()->json(['error' => 'Nėra teisių'], 401);
+        }
+
         $comment = new Comment();
         $comment->user_id = $user->id;
         $comment->video_id = $request['video_id'];
@@ -64,7 +81,7 @@ class CommentController extends Controller
         $comment->save();
 
         return response()->json([
-            'message' => 'Comment reply successfully created',
+            'message' => 'Komentaro atsakymas sėkmingai pridėtas',
             'comment' => $comment,
         ], 201);
     }
@@ -72,12 +89,24 @@ class CommentController extends Controller
     public function editComment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'comment_text' => 'required|string|max:255',
+            'comment_text' => 'required|string|between:2,100',
             'id' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
+        $permission = Permission::where('id', $user->group_id)->get();
+
+        if(!$permission[0]->comment_edit){
+            return response()->json(['error' => 'Nėra teisių'], 401);
         }
 
         $comment = Comment::find($request['id']);
@@ -86,7 +115,7 @@ class CommentController extends Controller
         $comment->save();
 
         return response()->json([
-            'message' => 'Comment successfully edited',
+            'message' => 'Komentaras sėkmingai atnaujintas',
             'comment' => $comment,
         ], 201);
     }
@@ -110,7 +139,7 @@ class CommentController extends Controller
 
 
         return response()->json([
-            'message' => 'Comments successfully fetched',
+            'message' => 'Komentarai sėkmingai gauti',
             'comments' => $comments,
         ], 200);
     }
@@ -124,12 +153,23 @@ class CommentController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        DB::table('comments')->where(
-            'id', $request['id'])
-            ->delete();
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
+        }
+
+        $permission = Permission::where('id', $user->group_id)->get();
+
+        if(!$permission[0]->comment_delete){
+            return response()->json(['error' => 'Nėra teisių'], 401);
+        }
+
+        Comment::where('comment_parent_id', $request['id'])->delete();
+        Comment::where('id', $request['id'])->delete();
         
         return response()->json([
-            'message' => 'Comment successfully deleted',
+            'message' => 'Komentaras sėkmingai ištrintas',
             'comments' => $request['id'],
         ], 200);
         

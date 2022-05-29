@@ -41,19 +41,19 @@ Route::group([
 ], function ($router) {
     Route::get('/users-list', [AdminController::class, 'getUsersList']); 
     Route::post('/add-user', [AdminController::class, 'addUser']);
-    Route::post('/delete-user', [AdminController::class, 'deleteUser']);
-    Route::post('/admin-update-user', [AdminController::class, 'adminUpdateUser']);
+    Route::delete('/delete-user', [AdminController::class, 'deleteUser']);
+    Route::patch('/admin-update-user', [AdminController::class, 'adminUpdateUser']);
 
     Route::get('/permissions-list', [PermissionController::class, 'getPermissionsList']);
     Route::post('/add-permission', [PermissionController::class, 'addPermission']);
-    Route::post('/delete-permission', [PermissionController::class, 'deletePermission']);
-    Route::post('/update-permission', [PermissionController::class, 'updatePermission']);
+    Route::delete('/delete-permission', [PermissionController::class, 'deletePermission']);
+    Route::patch('/update-permission', [PermissionController::class, 'updatePermission']);
     Route::get('/get-permission', [PermissionController::class, 'getPermission']);
 
     Route::get('/genre-requests-list', [GenreRequestController::class, 'getGenreRequestsList']);
-    Route::post('/approve-genre-request', [GenreRequestController::class, 'approveGenreRequest']);
-    Route::post('/delete-genre-request', [GenreRequestController::class, 'deleteGenreRequest']);
-    Route::post('/reject-genre-request', [GenreRequestController::class, 'rejectGenreRequest']);
+    Route::patch('/approve-genre-request', [GenreRequestController::class, 'approveGenreRequest']);
+    Route::delete('/delete-genre-request', [GenreRequestController::class, 'deleteGenreRequest']);
+    Route::patch('/reject-genre-request', [GenreRequestController::class, 'rejectGenreRequest']);
 });
 
 Route::group([
@@ -61,7 +61,7 @@ Route::group([
     'prefix' => 'user'
 ], function ($router) {
     Route::get('/get-user', [UserController::class, 'getUserById']); 
-    Route::post('/update-profile', [UserController::class, 'updateProfile']);
+    Route::patch('/update-profile', [UserController::class, 'updateProfile']);
     Route::get('/get-user-permissions', [PermissionController::class, 'getAuthUserPermissions']);
     Route::post('/add-genre-request', [GenreRequestController::class, 'addGenreRequest']);
     Route::get('/get-user-genre-requests-list', [GenreRequestController::class, 'getUserGenreRequestsList']);
@@ -78,7 +78,7 @@ Route::group([
     Route::get('/get-video', [VideoController::class, 'getVideoById']); 
     Route::delete('/delete-video', [VideoController::class, 'deleteVideo']); 
     Route::get('/get-videos-list', [VideoController::class, 'getVideosList']);
-    Route::post('/update-video', [VideoController::class, 'updateVideo']); 
+    Route::patch('/update-video', [VideoController::class, 'updateVideo']); 
     Route::get('/get-user-videos-list', [VideoController::class, 'getUserVideosList']);
     Route::post('/add-video-view', [VideoController::class, 'addVideoView']); 
     Route::post('/react-to-video', [VideoController::class, 'reactToVideo']); 
@@ -97,8 +97,8 @@ Route::group([
     Route::post('/create-comment', [CommentController::class, 'createComment']);
     Route::post('/create-comment-reply', [CommentController::class, 'createCommentReply']);
     Route::get('/get-video-comments', [CommentController::class, 'getVideoComments']);
-    Route::post('/delete-comment', [CommentController::class, 'deleteComment']);
-    Route::post('/edit-comment', [CommentController::class, 'editComment']);
+    Route::delete('/delete-comment', [CommentController::class, 'deleteComment']);
+    Route::patch('/edit-comment', [CommentController::class, 'editComment']);
     
 });
 
@@ -117,6 +117,6 @@ Route::group([
     Route::get('/get-genres-list', [GenreController::class, 'getGenresList']);
     Route::get('/get-genre', [GenreController::class, 'getGenre']);
     Route::post('/create-genre', [GenreController::class, 'createGenre']);
-    Route::post('/delete-genre', [GenreController::class, 'deleteGenre']);
-    Route::post('/update-genre', [GenreController::class, 'updateGenre']);
+    Route::delete('/delete-genre', [GenreController::class, 'deleteGenre']);
+    Route::patch('/update-genre', [GenreController::class, 'updateGenre']);
 });
