@@ -42,8 +42,8 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|numeric',
             'first_name' => 'string|between:2,100',
             'last_name' => 'string|between:2,100',
             'age' => 'numeric',
@@ -61,8 +61,6 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Neregistruotas naudotojas'], 401);
         }
-
-        $user = User::find($request['user_id']);
 
         $user->first_name = $request['first_name'];
         $user->last_name = $request['last_name'];
