@@ -395,7 +395,7 @@ class VideoController extends Controller
         }
 
         $videos = Video::where('genre', $request['genre'])
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->where('created_at', '>=', Carbon::now()->subDays(60))
             ->where('id', '!=', $request['videoId'])
             ->orderBy('clicks', 'desc')
             ->orderBy('likes', 'desc')
@@ -413,21 +413,21 @@ class VideoController extends Controller
     {
         $popularGenres = DB::select('select sum(clicks) as totalViews, genre  from videos group by genre order by totalViews desc limit 3');
         $videos1 = Video::where('genre', $popularGenres[0]->genre)
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->where('created_at', '>=', Carbon::now()->subDays(60))
             ->orderBy('clicks', 'desc')
             ->orderBy('likes', 'desc')
             ->take(5)
             ->get();
 
         $videos2 = Video::where('genre', $popularGenres[1]->genre)
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->where('created_at', '>=', Carbon::now()->subDays(60))
             ->orderBy('clicks', 'desc')
             ->orderBy('likes', 'desc')
             ->take(5)
             ->get();
         
         $videos3 = Video::where('genre', $popularGenres[2]->genre)
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->where('created_at', '>=', Carbon::now()->subDays(60))
             ->orderBy('clicks', 'desc')
             ->orderBy('likes', 'desc')
             ->take(5)
