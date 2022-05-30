@@ -44,16 +44,16 @@ class UserController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'first_name' => 'string|between:2,100',
-            'last_name' => 'string|between:2,100',
-            'age' => 'numeric',
-            'country' => 'string|between:2,100',
-            'city' => 'string|between:2,100',
+            'first_name' => 'required|string|between:2,100',
+            'last_name' => 'required|string|between:2,100',
+            'age' => 'required|numeric',
+            'country' => 'required|string|between:2,100',
+            'city' => 'required|string|between:2,100',
             'avatar_url' => 'file|mimes:jpg,png,jpeg,gif,svg|max:5120',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $user = auth()->user();
@@ -67,7 +67,6 @@ class UserController extends Controller
         $user->age = $request['age'];
         $user->country = $request['country'];
         $user->city = $request['city'];
-        $user->group_id = $request['group_id'];
         $oldPath = "";
 
         if ($request->hasFile('avatar_url')) {

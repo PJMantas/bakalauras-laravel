@@ -61,7 +61,7 @@ Route::group([
     'prefix' => 'user'
 ], function ($router) {
     Route::get('/get-user', [UserController::class, 'getUserById']); 
-    Route::patch('/update-profile', [UserController::class, 'updateProfile']);
+    Route::post('/update-profile', [UserController::class, 'updateProfile']);
     Route::get('/get-user-permissions', [PermissionController::class, 'getAuthUserPermissions']);
     Route::post('/add-genre-request', [GenreRequestController::class, 'addGenreRequest']);
     Route::get('/get-user-genre-requests-list', [GenreRequestController::class, 'getUserGenreRequestsList']);
