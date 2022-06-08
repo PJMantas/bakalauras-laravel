@@ -54,11 +54,6 @@ class AdminController extends Controller
             'username' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
-            'first_name' => 'string|between:2,100',
-            'last_name' => 'string|between:2,100',
-            'age' => 'numeric',
-            'country' => 'string|between:2,100',
-            'city' => 'string|between:2,100',
             'group_id' => 'required|numeric',
 
         ]);
