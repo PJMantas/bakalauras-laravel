@@ -293,9 +293,18 @@ class VideoController extends Controller
         
     }
 
-    public function getVideosList(){
+    public function getVideosList(Request $request){
 
-        $videos = DB::select('select * from videos');
+        $validator = Validator::make($request ->all(), [
+            'videoCount' => 'required|numeric'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        //$videos = DB::select('select * from videos');
+        $videos = DB::select('select * from videos order by clicks desc LIMIT ?', [$request['videoCount']]);
 
         return response()->json([
             'message' => 'Sėkmingai gautas vaizdo įrašų sąrašas',
@@ -348,15 +357,15 @@ class VideoController extends Controller
 
         if ($request['genre'] != -1)
         {
-            //$videos = DB::select('select * from videos where genre=' . $request['genre'] . ' order by ' . $request['orderField'] . ' ' . $request['orderType']);
-            $videos = Video::Where('genre', $request['genre'])
-                    ->orderBy($request['orderField'], $request['orderType'])
-                    ->get();
+            $videos = DB::select('select * from videos where genre=' . $request['genre'] . ' order by ' . $request['orderField'] . ' ' . $request['orderType']);
+            //$videos = Video::Where('genre', $request['genre'])
+            //        ->orderBy($request['orderField'], $request['orderType'])
+            //        ->get();
         }
         else
         {
-            //$videos = DB::select('select * from videos order by ' . $request['orderField'] . ' ' . $request['orderType']);
-            $videos = Video::orderBy($request['orderField'], $request['orderType'])->get();
+            $videos = DB::select('select * from videos order by ' . $request['orderField'] . ' ' . $request['orderType']);
+            //$videos = Video::orderBy($request['orderField'], $request['orderType'])->get();
         }
 
         return response()->json([
@@ -413,21 +422,21 @@ class VideoController extends Controller
     {
         $popularGenres = DB::select('select sum(clicks) as totalViews, genre  from videos group by genre order by totalViews desc limit 3');
         $videos1 = Video::where('genre', $popularGenres[0]->genre)
-            ->where('created_at', '>=', Carbon::now()->subDays(60))
+            ->where('created_at', '>=', Carbon::now()->subDays(90))
             ->orderBy('clicks', 'desc')
             ->orderBy('likes', 'desc')
             ->take(5)
             ->get();
 
         $videos2 = Video::where('genre', $popularGenres[1]->genre)
-            ->where('created_at', '>=', Carbon::now()->subDays(60))
+            ->where('created_at', '>=', Carbon::now()->subDays(90))
             ->orderBy('clicks', 'desc')
             ->orderBy('likes', 'desc')
             ->take(5)
             ->get();
         
         $videos3 = Video::where('genre', $popularGenres[2]->genre)
-            ->where('created_at', '>=', Carbon::now()->subDays(60))
+            ->where('created_at', '>=', Carbon::now()->subDays(90))
             ->orderBy('clicks', 'desc')
             ->orderBy('likes', 'desc')
             ->take(5)
